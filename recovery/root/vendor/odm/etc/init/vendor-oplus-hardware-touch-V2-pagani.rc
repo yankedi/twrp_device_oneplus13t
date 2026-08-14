@@ -1,0 +1,38 @@
+# pagani (OnePlus 13T/S, project 24821/24875) touch bring-up.
+#
+# Assets come from the verified PKX110_15.0.2.302(CN01) stock recovery image:
+#   - service + libs: system/bin/hw/vendor-oplus-hardware-touch-V2-service
+#     and its .302 libs (kept in /odm/touch302 so other models are unaffected)
+#   - panel firmware/config: vendor/firmware/tp/24821 (S3910 TIANMA HBP),
+#     copied to both /vendor/firmware/tp/24821 (stock path) and
+#     /odm/firmware/tp/24821 (ODM convention).
+#
+# stock recovery starts touchDaemon + touch-aidl-1 + touch-aidl-2 together.
+# touchDaemon depends on libhwbinder.so which is not guaranteed in the
+# Android 16 TWRP userspace, so only the AIDL touch service is added here;
+# the existing vendor.touch-aidl-2 (hbp5 launcher) is left unchanged.
+
+on early-init
+    write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
+
+on init
+    write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
+
+service vendor.touch-aidl-1 /odm/bin/hw/touch-service-pagani.sh
+    class hal
+    capabilities SYS_NICE
+    user root
+    group root system readproc
+    interface aidl vendor.oplus.hardware.touch.IOplusTouch/default
+    seclabel u:r:recovery:s0
+
+on boot
+    chown system system /dev/tcm_hbp0
+    chmod 0777 /dev/tcm_hbp0
+    chown system system /dev/hbp_core
+    chown system system /dev/hbp0
+    chown system system /dev/hbp1
+    chmod 660 /dev/hbp_core
+    chmod 660 /dev/hbp0
+    chmod 660 /dev/hbp1
+    start vendor.touch-aidl-1
