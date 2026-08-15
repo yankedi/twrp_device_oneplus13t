@@ -1,0 +1,28 @@
+# file_contexts for recovery-ramdisk crypto blobs and TEE device nodes.
+# Paths follow the recovery ramdisk layout; entries adapted from stock
+# vendor_file_contexts (line refs in comments).
+
+# qseecomd daemon + TEE device nodes  (stock:1960,1847,1882,1150)
+/vendor/bin/qseecomd                               u:object_r:tee_exec:s0
+/dev/qseecom                                       u:object_r:tee_device:s0
+/dev/smcinvoke                                     u:object_r:tee_device:s0
+/dev/ufs-bsg.*                                     u:object_r:vendor_bsg_device:s0
+
+# QSEE shared-memory heaps  (stock:2046,2082)
+/dev/dma_heap/qcom,qseecom                         u:object_r:vendor_dmabuf_qseecom_heap_device:s0
+/dev/dma_heap/qcom,qseecom-ta                      u:object_r:vendor_dmabuf_qseecom_ta_heap_device:s0
+
+# crypto HAL services  (stock:2229,2195,2211-2213,2198)
+/vendor/bin/hw/android\.hardware\.security\.keymint-service-qti u:object_r:vendor_hal_keymint_qti_exec:s0
+/vendor/bin/hw/android\.hardware\.gatekeeper-service-qti        u:object_r:vendor_hal_gatekeeper_qti_exec:s0
+/vendor/bin/hw/android\.hardware\.keymaster@4\.1-service-qti    u:object_r:vendor_hal_keymaster_qti_exec:s0
+/vendor/bin/hw/vendor\.qti\.hardware\.qseecom@1\.0-service      u:object_r:vendor_hal_qseecom_default_exec:s0
+
+# ssgtzd  (stock:33,1941,2036)
+/vendor/bin/ssgtzd                                 u:object_r:vendor_ssgtzd_exec:s0
+/dev/socket/ssgtzd                                 u:object_r:vendor_ssgtzd_socket:s0
+/dev/socket/ssgtzd_opener                          u:object_r:vendor_ssgtzd_opener_socket:s0
+
+# RPMB / SP keymaster  (stock:1411/1478,1932)
+/dev/block/platform/soc/1d84000\.ufshc/by-name/rpm u:object_r:vendor_rpmb_device:s0
+/dev/sp_keymaster                                  u:object_r:vendor_sp_keymaster_device:s0

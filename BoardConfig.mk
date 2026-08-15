@@ -102,6 +102,9 @@ TARGET_COPY_OUT_VENDOR          := vendor
 TARGET_BOARD_PLATFORM   := sm87xx
 QCOM_BOARD_PLATFORMS    += sm87xx
 
+# SELinux
+BOARD_SEPOLICY_DIRS += device/oplus/sm87xx/sepolicy
+
 # Recovery
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE    := true
 TARGET_RECOVERY_PIXEL_FORMAT                := RGBX_8888

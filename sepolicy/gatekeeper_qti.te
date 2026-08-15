@@ -1,0 +1,15 @@
+# QTI Gatekeeper AIDL service in recovery.
+# Justification: dmesg denials — recovery exec's
+# /vendor/bin/hw/android.hardware.gatekeeper-service-qti.
+# Transition pattern mirrors stock vendor_sepolicy.cil:6763-6768.
+
+allow recovery vendor_hal_gatekeeper_qti:process transition;
+type_transition recovery vendor_hal_gatekeeper_qti_exec:process vendor_hal_gatekeeper_qti;
+# recovery is coredomain: neverallow forbids its vendor_exec execute grant;
+# entrypoint + transition scaffold kept (permissive today).
+allow vendor_hal_gatekeeper_qti vendor_hal_gatekeeper_qti_exec:file { read getattr map execute open entrypoint };
+
+# Gatekeeper TEE access
+allow vendor_hal_gatekeeper_qti tee_device:chr_file { ioctl read write getattr open };
+allow vendor_hal_gatekeeper_qti vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr open };
+allow vendor_hal_gatekeeper_qti vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr open };

@@ -1,0 +1,32 @@
+# Type declarations for the recovery-ramdisk vendor crypto services.
+# Declarations mirror stock vendor_sepolicy.cil (OnePlus 13T .302):
+#   vendor_sepolicy.cil line refs in comments.
+# tee / tee_exec / tee_device / firmware_file / dm_device and the hal_*
+# service types already exist in AOSP public policy.
+
+# qseecomd / TEE  (stock:3317/3319, 2087/2089, 2155/2161, 3047)
+type vendor_hal_qseecom_default, domain;
+type vendor_hal_qseecom_default_exec, exec_type, vendor_file_type, file_type;
+type vendor_dmabuf_qseecom_heap_device, dev_type;
+type vendor_dmabuf_qseecom_ta_heap_device, dev_type;
+type vendor_rpmb_device, dev_type;
+type vendor_bsg_device, dev_type;
+type vendor_sp_keymaster_device, dev_type;
+
+# QTI KeyMint  (stock:2583/2585)
+type vendor_hal_keymint_qti, domain;
+type vendor_hal_keymint_qti_exec, exec_type, vendor_file_type, file_type;
+
+# QTI Keymaster (legacy HIDL; kept for manifest completeness)  (stock:2579/2581)
+type vendor_hal_keymaster_qti, domain;
+type vendor_hal_keymaster_qti_exec, exec_type, vendor_file_type, file_type;
+
+# QTI Gatekeeper  (stock:2559/2561)
+type vendor_hal_gatekeeper_qti, domain;
+type vendor_hal_gatekeeper_qti_exec, exec_type, vendor_file_type, file_type;
+
+# SSG TA  (stock:3791/3793, 3117/3119)
+type vendor_ssgtzd, domain;
+type vendor_ssgtzd_exec, exec_type, vendor_file_type, file_type;
+type vendor_ssgtzd_socket, file_type;
+type vendor_ssgtzd_opener_socket, file_type;
