@@ -1,0 +1,34 @@
+# Recovery-domain rules for the working FBE crypto path.
+# Justification: permissive-mode avc denials in
+# twrp/non-destructive-validation-2026-08-15/logs/dmesg.txt — recovery needs
+# service_manager access to the crypto AIDL services, dm ioctls for the
+# decrypted mapper, read access to metadata/user key blobs, and the crypto
+# properties. Read-only data access is permitted by AOSP neverallow
+# (private/recovery.te:201-212 forbids only write/execute).
+
+# NOTE: AOSP neverallow policy in this fork forbids recovery (coredomain)
+# from registering protected HAL/keystore services (hal_keymint*.te,
+# hal_gatekeeper.te, domain.te full_treble rules), from accessing
+# vold_data_file/vold_metadata_file (private/vold.te:433-461) and
+# keystore_data_file (private/keystore.te). Those rules are intentionally
+# omitted — recovery runs permissive today and FBE works.
+
+# dm ioctls used by the decrypted data mapper (DM_TABLE_STATUS/DM_DEV_SUSPEND)
+allow recovery dm_device:blk_file rw_file_perms;
+allowxperm recovery dm_device:blk_file ioctl { 0x5331 0x4c01 };
+
+# gatekeeper data dir read (not neverallow-restricted for recovery)
+allow recovery gatekeeper_data_file:dir r_dir_perms;
+
+# crypto properties
+# NOTE: keystore_diagnostics_prop / keystore_listen_prop live in private
+# policy and are not accessible from this vendor dir; those two get_prop
+# rules are intentionally omitted (permissive today).
+get_prop(recovery, keystore_config_prop)
+get_prop(recovery, apexd_prop)
+set_prop(recovery, vold_status_prop)
+set_prop(recovery, vold_prop)
+
+# keystore2 binder and tmp sqlite locking
+allow recovery self:binder call;
+allow recovery tmpfs:file ioctl;

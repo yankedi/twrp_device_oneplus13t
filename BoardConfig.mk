@@ -86,9 +86,11 @@ BOARD_RAMDISK_USE_LZ4       := true
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED  := true
 BOARD_RECOVERYIMAGE_PARTITION_SIZE      := 0x6400000
 
-BOARD_SUPER_PARTITION_SIZE                  := 15569256448
+# pagani (OnePlus 13T/S, PKX110/CPH2723, project 24821/24875) physical super
+# geometry; measured from live device lpdump and matching koaaN pagani tree.
+BOARD_SUPER_PARTITION_SIZE                  := 14956888064
 BOARD_SUPER_PARTITION_GROUPS                := qti_dynamic_partitions
-BOARD_QTI_DYNAMIC_PARTITIONS_SIZE           := 15565062144
+BOARD_QTI_DYNAMIC_PARTITIONS_SIZE           := 14952693760
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext product vendor vendor_dlkm odm
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST += my_bigball my_carrier my_company my_engineering my_heytap my_manifest my_preload my_product my_region my_stock
 
@@ -99,6 +101,9 @@ TARGET_COPY_OUT_VENDOR          := vendor
 # Platform
 TARGET_BOARD_PLATFORM   := sm87xx
 QCOM_BOARD_PLATFORMS    += sm87xx
+
+# SELinux
+BOARD_SEPOLICY_DIRS += device/oplus/sm87xx/sepolicy
 
 # Recovery
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE    := true

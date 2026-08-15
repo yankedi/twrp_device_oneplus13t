@@ -1,0 +1,23 @@
+# qseecomd / TEE in recovery.
+# Justification: dmesg denials — recovery exec's /vendor/bin/qseecomd and the
+# daemon then opens /dev/qseecom, /dev/smcinvoke, /dev/dma_heap/qcom,qseecom*,
+# /dev/ufs-bsg* (runtime evidence: twrp/non-destructive-validation-2026-08-15/logs/dmesg.txt).
+# Transition pattern mirrors stock vendor_sepolicy.cil:6963-6968.
+
+# init/recovery (same domain in recovery) exec's qseecomd -> tee domain
+allow recovery tee:process transition;
+type_transition recovery tee_exec:process tee;
+# recovery is coredomain in this fork: AOSP neverallow (domain.te:1206)
+# forbids coredomain from executing vendor_file_type, so the recovery-side
+# exec grant is intentionally omitted (permissive today); the target
+# domain entrypoint + transition scaffold are kept.
+allow tee tee_exec:file { read getattr map execute open entrypoint };
+
+# qseecomd TEE IPC  (stock:10338-10344, 12451, 12461)
+allow tee tee_device:chr_file { ioctl read write getattr open };
+allow tee vendor_dmabuf_qseecom_heap_device:chr_file { ioctl read getattr open };
+allow tee vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr open };
+allow tee vendor_bsg_device:chr_file { ioctl read write getattr open };
+allow tee vendor_rpmb_device:chr_file { ioctl read write getattr open };
+# NOTE: firmware_file type does not exist in the TWRP sepolicy fork;
+# /firmware access rules are intentionally omitted (permissive today).

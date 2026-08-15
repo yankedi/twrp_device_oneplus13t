@@ -1,0 +1,18 @@
+# SSG TA daemon in recovery.
+# Justification: dmesg denials — recovery exec's /vendor/bin/ssgtzd which then
+# opens /dev/qseecom, QSEE TA heap and /firmware.
+# Transition pattern mirrors stock vendor_sepolicy.cil:12445-12450.
+
+allow recovery vendor_ssgtzd:process transition;
+type_transition recovery vendor_ssgtzd_exec:process vendor_ssgtzd;
+# recovery is coredomain: neverallow forbids its vendor_exec execute grant;
+# entrypoint + transition scaffold kept (permissive today).
+allow vendor_ssgtzd vendor_ssgtzd_exec:file { read getattr map execute open entrypoint };
+
+# ssgtzd QRTR IPC + TEE  (stock:12451,12457,12459,12461-12466)
+allow vendor_ssgtzd self:qipcrtr_socket { create getattr write read setopt };
+allowxperm vendor_ssgtzd self:qipcrtr_socket ioctl { 0xc300 0xc301 0xc302 0xc303 0xc304 0xc305 };
+allow vendor_ssgtzd tee_device:chr_file { ioctl read write getattr open };
+allow vendor_ssgtzd vendor_dmabuf_qseecom_ta_heap_device:chr_file { ioctl read getattr open };
+# NOTE: firmware_file type does not exist in the TWRP sepolicy fork;
+# /firmware read access is intentionally omitted (permissive today).
